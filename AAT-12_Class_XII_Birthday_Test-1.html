@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AAT-12 | Academic Aptitude Test – Class XII</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f9;margin:0;color:#18202a}
+.wrap{max-width:760px;margin:auto;padding:18px}
+.card{background:white;border-radius:16px;padding:22px;margin:14px 0;box-shadow:0 3px 14px #0001}
+h1{margin:0 0 5px}.muted{color:#667085}.pill{display:inline-block;padding:7px 10px;border-radius:20px;background:#eef2ff;margin:3px;font-size:13px}
+input[type=text]{width:100%;box-sizing:border-box;padding:13px;border:1px solid #ccd2da;border-radius:9px;margin-top:7px;font-size:16px}
+.q{padding:15px 0;border-bottom:1px solid #eee}.q:last-child{border:0}
+.opt{display:block;padding:10px;margin:7px 0;border:1px solid #ddd;border-radius:9px;cursor:pointer}
+button{width:100%;padding:14px;border:0;border-radius:10px;background:#111827;color:white;font-size:17px;font-weight:bold;cursor:pointer}
+#timer{position:sticky;top:8px;z-index:5;background:#111827;color:white;padding:12px;border-radius:10px;text-align:center;font-weight:bold}
+.hidden{display:none}.score{font-size:42px;font-weight:800;text-align:center}.green{color:#087443}
+.warn{background:#fff7ed;padding:12px;border-radius:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card" id="intro">
+<h1>AAT-12</h1>
+<div><b>Academic Aptitude Test – Class XII</b></div>
+<p class="muted">Online Objective Assessment • 50 Questions • 50 Marks • 30 Minutes</p>
+<span class="pill">Physics</span><span class="pill">Chemistry</span><span class="pill">Biology</span>
+<div class="warn"><b>Instructions:</b> Attempt all 50 questions. One mark each. No negative marking. Choose the best answer.</div>
+<p><b>Candidate Name</b><input id="name" type="text" placeholder="Enter your name"></p>
+<p><b>Roll No.</b><input id="roll" type="text" placeholder="Enter roll number"></p>
+<button onclick="start()">Start Test</button>
+</div>
+
+<div id="exam" class="hidden">
+<div id="timer">30:00</div>
+<form id="quiz"></form>
+<button onclick="submitTest();return false;">SUBMIT TEST</button>
+</div>
+
+<div class="card hidden" id="result"></div>
+<div class="card hidden" id="claim">
+<h2>Prize Claim</h2>
+<p><b>Qualification status:</b> Eligible for the AAT-12 prize claim.</p>
+<p>Candidate Name<input id="claimName" type="text" readonly></p>
+<p>Roll No.<input id="claimRoll" type="text" readonly></p>
+<p>Score<input id="claimScore" type="text" readonly></p>
+<p>For the birthday surprise, submit this claim to the test organizer.</p>
+<button onclick="finish()">SUBMIT PRIZE CLAIM</button>
+</div>
+</div>
+<script>
+const qs=[
+["Physics","The SI unit of electric charge is:",["Volt","Coulomb","Ohm","Watt"],1],
+["Physics","The dimensional formula of force is:",["MLT⁻¹","MLT⁻²","ML²T⁻²","M⁰LT⁻²"],1],
+["Physics","For a body in uniform circular motion, acceleration is directed:",["Along tangent","Away from centre","Towards centre","Zero"],2],
+["Physics","The energy stored in a capacitor is:",["CV","CV²","½CV²","2CV²"],2],
+["Physics","The refractive index of vacuum is:",["0","1","1.33","∞"],1],
+["Physics","A transformer works on the principle of:",["Photoelectric effect","Mutual induction","Heating effect","Doppler effect"],1],
+["Physics","The wavelength of a wave is related to speed v and frequency f by:",["λ=vf","λ=f/v","λ=v/f","λ=1/vf"],2],
+["Physics","The unit of magnetic flux is:",["Tesla","Weber","Henry","Farad"],1],
+["Physics","In a pure resistive AC circuit, current and voltage are:",["90° apart","In phase","180° apart","Unrelated"],1],
+["Physics","The escape velocity from Earth is approximately:",["3.2 km/s","7.9 km/s","11.2 km/s","22.4 km/s"],2],
+["Physics","The focal length of a plane mirror is:",["Zero","One metre","Infinite","Negative"],2],
+["Physics","Which particle has no electric charge?",["Proton","Electron","Neutron","Positron"],2],
+["Physics","The photoelectric effect supports the:",["Wave nature only","Particle nature of light","Mechanical nature","Nuclear nature"],1],
+["Physics","The SI unit of power is:",["Joule","Newton","Watt","Pascal"],2],
+["Physics","If resistance is doubled at constant voltage, current becomes:",["Double","Half","Four times","Unchanged"],1],
+
+["Chemistry","The pH of a neutral solution at 25°C is:",["0","5","7","14"],2],
+["Chemistry","Avogadro's number is approximately:",["6.022×10²³","9.8×10²","3.14×10⁸","1.602×10⁻¹⁹"],0],
+["Chemistry","The oxidation state of oxygen in H₂O₂ is:",["−2","−1","0","+1"],1],
+["Chemistry","A catalyst changes the:",["Equilibrium constant","Activation energy/pathway","Products only","Atomic mass"],1],
+["Chemistry","Which is a strong acid?",["CH₃COOH","H₂CO₃","HCl","NH₄OH"],2],
+["Chemistry","The shape of methane (CH₄) is:",["Linear","Trigonal planar","Tetrahedral","Bent"],2],
+["Chemistry","The functional group of alcohols is:",["−CHO","−COOH","−OH","−CO−"],2],
+["Chemistry","The molar mass of NaCl is approximately:",["23 g/mol","35.5 g/mol","58.5 g/mol","117 g/mol"],2],
+["Chemistry","Which gas is mainly responsible for acid rain?",["O₂","SO₂","H₂","He"],1],
+["Chemistry","A buffer solution resists change in:",["Temperature","Pressure","pH","Volume"],2],
+["Chemistry","The bond in NaCl is primarily:",["Covalent","Ionic","Metallic","Hydrogen"],1],
+["Chemistry","Which element has atomic number 1?",["Helium","Hydrogen","Lithium","Carbon"],1],
+["Chemistry","The process of conversion of solid directly to gas is:",["Fusion","Condensation","Sublimation","Evaporation"],2],
+["Chemistry","Benzene has molecular formula:",["C₆H₆","C₆H₁₂","C₅H₆","C₇H₈"],0],
+["Chemistry","The electrode where reduction occurs is called:",["Anode","Cathode","Salt bridge","Electrolyte"],1],
+
+["Biology","The basic unit of heredity is:",["Cell","Gene","Tissue","Organ"],1],
+["Biology","The powerhouse of the cell is:",["Ribosome","Nucleus","Mitochondrion","Golgi body"],2],
+["Biology","DNA stands for:",["Deoxyribonucleic acid","Dinucleic acid","Deoxyribose nitrogen acid","Double nucleic acid"],0],
+["Biology","The process by which green plants make food is:",["Respiration","Photosynthesis","Transpiration","Fermentation"],1],
+["Biology","Insulin is secreted by:",["Thyroid","Pancreas","Adrenal gland","Pituitary"],1],
+["Biology","Which blood cells help in clotting?",["RBCs","WBCs","Platelets","Plasma cells"],2],
+["Biology","The normal chromosome number in a human somatic cell is:",["23","44","46","48"],2],
+["Biology","The functional unit of kidney is:",["Neuron","Nephron","Alveolus","Villus"],1],
+["Biology","Which molecule carries genetic information in most organisms?",["ATP","DNA","Glucose","Lipid"],1],
+["Biology","The site of protein synthesis is:",["Lysosome","Ribosome","Vacuole","Centrosome"],1],
+["Biology","The opening and closing of stomata is mainly controlled by:",["Root hairs","Guard cells","Xylem","Phloem"],1],
+["Biology","Which hormone is associated with the fight-or-flight response?",["Insulin","Adrenaline","Melatonin","Thyroxine"],1],
+["Biology","The movement of water across a selectively permeable membrane is:",["Diffusion","Osmosis","Active transport","Endocytosis"],1],
+["Biology","In humans, fertilization normally occurs in the:",["Uterus","Ovary","Fallopian tube","Cervix"],2],
+["Biology","Which vitamin is synthesized in skin in sunlight?",["Vitamin A","Vitamin C","Vitamin D","Vitamin K"],2],
+["Biology","The enzyme that begins protein digestion in the stomach is:",["Amylase","Pepsin","Lipase","Trypsin"],1],
+["Biology","The gas released during photosynthesis is:",["Nitrogen","Oxygen","Carbon dioxide","Hydrogen"],1],
+["Biology","The structural and functional unit of the nervous system is:",["Neuron","Nephron","Osteon","Sarcomere"],0],
+["Biology","Antibodies are mainly produced by:",["Red blood cells","B-lymphocytes","Platelets","Neutrophils"],1],
+["Biology","The green pigment required for photosynthesis is:",["Keratin","Chlorophyll","Melanin","Haemoglobin"],1]
+];
+let timer, remaining=1800, submitted=false;
+function start(){
+ if(!document.getElementById('name').value.trim()){alert("Please enter candidate name.");return}
+ document.getElementById('intro').classList.add('hidden'); document.getElementById('exam').classList.remove('hidden');
+ const f=document.getElementById('quiz');
+ qs.forEach((q,i)=>{let d=document.createElement('div');d.className='q';
+ d.innerHTML=`<b>Q${i+1}. [${q[0]}]</b> ${q[1]}`+q[2].map((o,j)=>`<label class="opt"><input type="radio" name="q${i}" value="${j}"> ${String.fromCharCode(65+j)}. ${o}</label>`).join('');
+ f.appendChild(d)});
+ timer=setInterval(()=>{remaining--;let m=Math.floor(remaining/60),s=remaining%60;document.getElementById('timer').textContent=`${m}:${String(s).padStart(2,'0')}`;if(remaining<=0){clearInterval(timer);submitTest()}},1000);
+}
+function submitTest(){
+ if(submitted)return; submitted=true;clearInterval(timer);
+ let score=0;qs.forEach((q,i)=>{let a=document.querySelector(`input[name=q${i}]:checked`);if(a&&+a.value===q[3])score++});
+ let pct=score*2, name=document.getElementById('name').value, roll=document.getElementById('roll').value||"—";
+ document.getElementById('exam').classList.add('hidden');
+ let r=document.getElementById('result');r.classList.remove('hidden');
+ let eligible=pct>=95;
+ r.innerHTML=`<h2>AAT-12 Result</h2><p><b>Candidate:</b> ${escapeHtml(name)}</p><p><b>Roll No.:</b> ${escapeHtml(roll)}</p><div class="score ${eligible?'green':''}">${score}/50</div><h2 style="text-align:center">${pct}%</h2><p style="text-align:center"><b>${eligible?'QUALIFIED — Prize Claim Eligible 🏆':'NOT QUALIFIED'}</b></p>${eligible?'<button onclick="showClaim()">CONTINUE TO PRIZE CLAIM</button>':'<p style="text-align:center">Thank you for taking AAT-12.</p>'}`;
+ if(eligible){document.getElementById('claimName').value=name;document.getElementById('claimRoll').value=roll;document.getElementById('claimScore').value=score+"/50 ("+pct+"%)";}
+ window.scrollTo(0,0);
+}
+function showClaim(){document.getElementById('claim').classList.remove('hidden');window.scrollTo(0,document.body.scrollHeight)}
+function finish(){alert("Prize claim submitted to the AAT-12 organizer.");}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+</script>
+</body></html>
